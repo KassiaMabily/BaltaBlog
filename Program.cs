@@ -1,6 +1,5 @@
 ﻿using Blog.Models;
 using Blog.Repositories;
-using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
 
 namespace Blog
@@ -10,33 +9,35 @@ namespace Blog
     private const string CONNECTION_STRING = "Server=localhost,1432;Database=Blog;User ID=sa;Password=Serif@123;Trusted_Connection=False;Encrypt=False;MultipleActiveResultSets=true;";
     static void Main(string[] args)
     {
-      var connection = new SqlConnection(CONNECTION_STRING);
-      connection.Open();
-      ReadUsers(connection);
-      ReadRoles(connection);
-      connection.Close();
+      using var connection = new SqlConnection(CONNECTION_STRING);
+      var repository = new Repository<User>(connection);
+
+      ReadWithRoles(connection);
     }
 
-    public static void ReadUsers(SqlConnection connection)
+    private static void ReadUsers(Repository<User> repository)
     {
-      var repository = new Repository<User>(connection);
       var users = repository.Read();
+      foreach (var item in users)
+        Console.WriteLine(item.Email);
+    }
+
+    private static void ReadUser(Repository<User> repository)
+    {
+      var user = repository.Read(2);
+      Console.WriteLine(user?.Email);
+    }
+
+    private static void ReadWithRoles(SqlConnection connection)
+    {
+      var repository = new UserRepository(connection);
+      var users = repository.ReadWithRole();
 
       foreach (var user in users)
-        Console.WriteLine(user.Name);
-
+      {
+        Console.WriteLine(user.Email);
+        foreach (var role in user.Roles) Console.WriteLine($" - {role.Slug}");
+      }
     }
-
-    public static void ReadRoles(SqlConnection connection)
-    {
-      var repository = new Repository<Role>(connection);
-      var roles = repository.Read();
-
-      foreach (var role in roles)
-        Console.WriteLine(role.Name);
-
-    }
-
-
   }
 }

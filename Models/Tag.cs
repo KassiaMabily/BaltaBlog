@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using Dapper.Contrib.Extensions;
 
 namespace Blog.Models
 {
-    [Table("[Tag]")]
+  [Table("[Tag]")]
     public class Tag
     {
         public int Id { get; set; }
