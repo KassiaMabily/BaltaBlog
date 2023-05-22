@@ -19,8 +19,8 @@ namespace Blog
 
     public static void ReadUsers(SqlConnection connection)
     {
-      var repository = new UserRepository(connection);
-      var users = repository.Get();
+      var repository = new Repository<User>(connection);
+      var users = repository.Read();
 
       foreach (var user in users)
         Console.WriteLine(user.Name);
@@ -29,8 +29,8 @@ namespace Blog
 
     public static void ReadRoles(SqlConnection connection)
     {
-      var repository = new RoleRepository(connection);
-      var roles = repository.Get();
+      var repository = new Repository<Role>(connection);
+      var roles = repository.Read();
 
       foreach (var role in roles)
         Console.WriteLine(role.Name);
